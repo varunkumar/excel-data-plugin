@@ -25,7 +25,7 @@ export default class Header extends React.Component {
             <a
               href="#"
               onClick={onLogout}
-              style={{ textAlign: "right;", display: "inline", paddingLeft: "5px", fontWeight: "normal" }}
+              style={{ textAlign: "right", display: "inline", paddingLeft: "5px", fontWeight: "normal" }}
             >
               Logout
             </a>

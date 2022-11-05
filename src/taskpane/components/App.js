@@ -1,9 +1,9 @@
-import { DefaultButton } from "@fluentui/react";
 import PropTypes from "prop-types";
 import * as React from "react";
 import Header from "./Header";
 import Login from "./Login";
 import Progress from "./Progress";
+import QueryEditor from "./QueryEditor";
 import { getUsername, isUserLoggedIn, logout } from "./superset";
 
 /* global console, Excel, require */
@@ -73,16 +73,7 @@ export default class App extends React.Component {
           message={this.state.message}
           onLogout={this.onLogout}
         />
-        {this.state.isUserLoggedIn ? (
-          <div>
-            <textarea style={{ width: "100%", height: 120 }} />
-            <DefaultButton className="ms-welcome__action" iconProps={{ iconName: "ChevronRight" }} onClick={this.click}>
-              Run
-            </DefaultButton>
-          </div>
-        ) : (
-          <Login onLoginSuccess={this.onLoginSuccess}></Login>
-        )}
+        {this.state.isUserLoggedIn ? <QueryEditor></QueryEditor> : <Login onLoginSuccess={this.onLoginSuccess}></Login>}
       </div>
     );
   }

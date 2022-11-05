@@ -30,7 +30,9 @@ export const refreshToken = async (username, password) => {
     console.error(error);
   }
 };
-setInterval(refreshToken, 1000 * 60 * 10);
+setInterval(() => {
+  refreshToken(getUsername(), localStorage.getItem("password"));
+}, 1000 * 60 * 10);
 
 export const getToken = () => {
   return token;
@@ -44,6 +46,44 @@ export const logout = () => {
   localStorage.removeItem("username");
   localStorage.removeItem("password");
   token = "";
+};
+
+export const getDatabase = async () => {
+  try {
+    const response = await fetch(SUPSERSET_URL + "/database/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken(),
+      },
+    });
+    const data = await response.json();
+    return data.result.map((db) => {
+      return { key: db.id, text: db.database_name, backend: db.backend };
+    });
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
+
+export const getSchema = async (databaseId) => {
+  try {
+    const response = await fetch(SUPSERSET_URL + "/database/" + databaseId + "/schemas/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken(),
+      },
+    });
+    const data = await response.json();
+    return data.result.map((schema) => {
+      return { key: schema, text: schema };
+    });
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 };
 
 export default tokenManager;
