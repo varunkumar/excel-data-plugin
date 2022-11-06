@@ -8,6 +8,20 @@ import { getUsername, isUserLoggedIn, logout } from "./superset";
 
 /* global console, Excel, require */
 
+const getColumnName = (columnNumber) => {
+  let dividend = columnNumber;
+  let columnName = "";
+  let modulo;
+
+  while (dividend > 0) {
+    modulo = (dividend - 1) % 26;
+    columnName = String.fromCharCode(65 + modulo) + columnName;
+    dividend = Math.floor((dividend - modulo) / 26);
+  }
+
+  return columnName;
+};
+
 export default class App extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -30,22 +44,17 @@ export default class App extends React.Component {
     this.setState({ isUserLoggedIn: false, message: "" });
   };
 
-  click = async () => {
+  handleQueryResult = async (columns, rows) => {
     try {
       await Excel.run(async (context) => {
-        /**
-         * Insert your Excel code here
-         */
-        const range = context.workbook.getSelectedRange();
+        const sheet = context.workbook.worksheets.getActiveWorksheet();
 
-        // Read the range address
-        range.load("address");
+        let data2d = [columns, ...rows];
 
-        // Update the fill color
-        range.format.fill.color = "yellow";
+        const range = sheet.getRange(`A1:${getColumnName(columns.length)}${data2d.length}`);
+        range.values = data2d;
 
         await context.sync();
-        console.log(`The range address was ${range.address}.`);
       });
     } catch (error) {
       console.error(error);
@@ -73,7 +82,11 @@ export default class App extends React.Component {
           message={this.state.message}
           onLogout={this.onLogout}
         />
-        {this.state.isUserLoggedIn ? <QueryEditor></QueryEditor> : <Login onLoginSuccess={this.onLoginSuccess}></Login>}
+        {this.state.isUserLoggedIn ? (
+          <QueryEditor onQueryResult={this.handleQueryResult}></QueryEditor>
+        ) : (
+          <Login onLoginSuccess={this.onLoginSuccess}></Login>
+        )}
       </div>
     );
   }
